@@ -2,19 +2,19 @@ package yourapp
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func InitDB(dataSourceName string) (*sql.DB, error) {
 	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
 	if err := db.Ping(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	log.Println("Database connection established")
 	return db, nil
 }
