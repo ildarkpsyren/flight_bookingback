@@ -42,7 +42,10 @@ go run cmd/yourapp/main.go
 Ensure the following prerequisites are met:
 
 - A running and accessible MySQL database.
-- Database connection string updated in the `main.go` file if necessary.
+- Update the database connection string in the `main.go` file if necessary. Specifically, replace `User` and `Password` in the following line with your database username and password:
+  ```go
+  db, err := yourapp.InitDB("User:Password@tcp(127.0.0.1:3306)/flight_booking")
+  ```
 
 ---
 
