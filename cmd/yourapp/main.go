@@ -5,24 +5,28 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"time"
 	"yourapp/internal/yourapp"
 )
 
-// CORS middleware
-func corsMiddleware(next http.Handler) http.Handler {
+func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		// Handle preflight request
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(w, r)
+		start := time.Now()
+		rw := &responseWriter{w, http.StatusOK}
+		next.ServeHTTP(rw, r)
+		log.Printf("Method: %s, URL: %s, Status: %d, Duration: %s, Comment: %s",
+			r.Method, r.URL.Path, rw.statusCode, time.Since(start), "Request processed")
 	})
+}
+
+type responseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+	rw.statusCode = code
+	rw.ResponseWriter.WriteHeader(code)
 }
 
 func main() {
@@ -37,16 +41,17 @@ func main() {
 	}(db)
 
 	router := mux.NewRouter()
-	router.Use(corsMiddleware) // Use the CORS middleware
+	router.Use(yourapp.CorsMiddleware) // Use the CORS middleware
+	router.Use(loggingMiddleware)      // Use the logging middleware
 
-	router.HandleFunc("/api/tickets/search", yourapp.SearchTickets(db)).Methods("GET")
-	router.HandleFunc("/tickets", yourapp.DeleteAllTickets(db)).Methods("DELETE")
-	router.HandleFunc("/tickets", yourapp.GetTickets(db)).Methods("GET")
-	router.HandleFunc("/tickets", yourapp.CreateTicket(db)).Methods("POST")
-	router.HandleFunc("/tickets/{id}", yourapp.GetTicketByID(db)).Methods("GET")
-	router.HandleFunc("/tickets/{id}", yourapp.DeleteTicket(db)).Methods("DELETE")
-	router.HandleFunc("/tickets/{first_name}/{last_name}/{booking_id}", yourapp.GetTicketByNameAndBookingID(db)).Methods("GET")
-	router.HandleFunc("/tickets", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/api/tickets/search", yourapp.SearchTickets(db)).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/tickets/delall", yourapp.DeleteAllTickets(db)).Methods("DELETE", "OPTIONS")
+	router.HandleFunc("/api/tickets/viewall", yourapp.GetTickets(db)).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/tickets/createticket", yourapp.CreateTicket(db)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/tickets/viewby/{id}", yourapp.GetTicketByID(db)).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/tickets/delby/{id}", yourapp.DeleteTicket(db)).Methods("DELETE", "OPTIONS")
+	router.HandleFunc("/api/tickets/check", yourapp.CheckTicket(db)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/tickets", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}).Methods("OPTIONS")
 

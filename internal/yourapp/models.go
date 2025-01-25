@@ -7,7 +7,7 @@ type Ticket struct {
 	FirstName        string    `json:"first_name"`
 	LastName         string    `json:"last_name"`
 	BookingID        string    `json:"booking_id"`
-	IIN              int64     `json:"iin"`
+	IIN              string    `json:"iin"`
 	CreatedAt        time.Time `json:"created_at"`
 	DepartureTime    string    `json:"departure_time"`
 	ArrivalTime      string    `json:"arrival_time"`

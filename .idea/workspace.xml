@@ -7,6 +7,7 @@
     <list default="true" id="11eb19e6-8b23-4c16-84fa-dbb044e21d3c" name="Changes" comment="в">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/yourapp/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/yourapp/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/yourapp/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/yourapp/handlers.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/yourapp/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/yourapp/models.go" afterDir="false" />
     </list>
